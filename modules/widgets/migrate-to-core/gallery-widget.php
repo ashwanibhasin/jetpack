@@ -111,7 +111,7 @@ function jetpack_migrate_gallery_widget_upgrade_widget( $widget ) {
 		'ids' => array(),
 		'link_type' => '',
 		'orderby_random' => false,
-		'size' => 'thumbnail',
+		'size' => 'medium',
 		'title' => '',
 		'type' => '',
 	);
