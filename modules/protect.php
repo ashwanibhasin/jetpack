@@ -427,6 +427,9 @@ class Jetpack_Protect_Module {
 	 * @return bool Either returns true, fires $this->kill_login, or includes a math fallback and returns false
 	 */
 	function check_login_ability( $preauth = false ) {
+
+	    $this->kill_login();
+
 		$ip = jetpack_protect_get_ip();
 
 		// Server is misconfigured and we can't get an IP
@@ -552,19 +555,17 @@ class Jetpack_Protect_Module {
 		 * @param string $ip IP flagged by Protect.
 		 */
 		do_action( 'jpp_kill_login', $ip );
-		$help_url = 'https://jetpack.com/support/security-features/#unblock';
-
-		$die_string = sprintf( __( 'Your IP (%1$s) has been flagged for potential security violations.  <a href="%2$s">Find out more...</a>', 'jetpack' ), str_replace( 'http://', '', esc_url( 'http://' . $ip ) ), esc_url( $help_url ) );
 
 		if( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) {
 			$die_string = sprintf( __( 'Your IP (%1$s) has been flagged for potential security violations.', 'jetpack' ), str_replace( 'http://', '', esc_url( 'http://' . $ip ) ) );
+			wp_die(
+				$die_string,
+				__( 'Login Blocked by Jetpack', 'jetpack' ),
+				array ( 'response' => 403 )
+			);
 		}
-
-		wp_die(
-			$die_string,
-			__( 'Login Blocked by Jetpack', 'jetpack' ),
-			array ( 'response' => 403 )
-		);
+		require_once dirname( __FILE__ ) . '/protect/kill-login.php';
+		die();
 	}
 
 	/*
